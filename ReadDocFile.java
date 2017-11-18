@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.hwpf.usermodel.Fields;
 
 /**
  * Source: Stack Overflow. https://stackoverflow.com/questions/7102511/how-read-doc-or-docx-file-in-java
@@ -16,7 +17,7 @@ public class ReadDocFile
         WordExtractor extractor = null;
         try
         {
-            file = new File("c:\\New.doc");
+            file = new File(args);
             FileInputStream fis = new FileInputStream(file.getAbsolutePath());
             HWPFDocument document = new HWPFDocument(fis);
             extractor = new WordExtractor(document);
