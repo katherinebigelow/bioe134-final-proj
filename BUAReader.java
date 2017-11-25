@@ -3,6 +3,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -25,7 +27,7 @@ public class BUAReader {
         BufferedReader br = new BufferedReader(fr);
         String line = br.readLine();
         ArrayList<String>txtread = new ArrayList<>();
-        //reads in prices.txt line by line and adds costs to the right type
+
         while(line!=null){
             if(!line.isEmpty()) {
                 txtread.add(line);
@@ -34,7 +36,22 @@ public class BUAReader {
         }
 
         files.add(txtread);
+
+        /**
+        int boxCounter = 0;
+        ArrayList<String>docFile = files.get(0);
+        Pattern p = Pattern.compile("FORMCHECKBOX");
+        Matcher m;
+        for(String str:docFile){
+            m = p.matcher(str);
+            while(m.find())
+                boxCounter++;
+        }
+        **/
+
         return files;
+
+
     }
     
     public static void main(String[] args) throws Exception {

@@ -38,17 +38,67 @@ public class BUA {
         this.invalid = false;
         this.funding_sources = "";
         this.grant_nos = "";
+
+
     }
+
+    public void setDependent(ArrayList<ArrayList<Integer>>atts){
+        this.needAttachment = new boolean[atts.size()];
+        this.attached = new boolean[atts.size()];
+
+        for(int i = 0; i<atts.size(); i++){
+            int vvvv = countSame(atts.get(i), this.checkboxes);
+            if(vvvv>3){
+                this.needAttachment[i] = true;
+            }
+        }
+    }
+
+    int countSame(ArrayList<Integer>first, ArrayList<Integer>second){
+        int count = 0;
+        int num = 0;
+        for(int i = 0; i<first.size()&&i<second.size(); i++){
+            if(first.get(i)==1&&first.get(i).equals(second.get(i))){
+                count++;
+            }
+        }
+        System.out.println();
+        return count;
+    }
+
 
     public void setCheckboxes(ArrayList<Integer> checkboxes) {
         this.checkboxes = checkboxes;
     }
 
     public void detectAttachments(ArrayList<ArrayList<String>> strs){
+        StringBuilder contentBuilder = new StringBuilder();
+        for (String temp:strs.get(1)){
+            contentBuilder.append(temp);
+        }
+        String content = contentBuilder.toString();
+        String[] names = {"Attachment II-Section A: Recombinant DNA"
+                ,"Attachment II-Section B: Biohazardous Agents & Toxins"
+                ,"Attachment II-Section G: Plants"
+                ,"RECOMBINANT OR SYNTHETIC NUCLEIC ACID MOLECULE EXPERIMENT QUESTIONNAIRE"
+                ,"ANIMAL EXPERIMENT QUESTIONNAIRE"
+                ,"List of California Airborne Transmissible Disease Pathogens"};
+        for(int i = 0 ; i<names.length; i++){
+            if(content.contains(names[i])){
+                this.attached[i]=true;
+            }
+        }
+        //different name for worksheet 1 in old forms:
+        if(content.contains("RECOMBINANT DNA EXPERIMENTS QUESTIONNAIRE")){
+            this.attached[3]=true;
+        }
 
     }
 
     public boolean isInvalid(){
+        if(!allAttached()){
+            this.invalid = true;
+        }
         return this.invalid;
     }
 
@@ -62,8 +112,9 @@ public class BUA {
         int maxBSL = -1;
         for(String str:temp){
             String input = str.substring(0, str.length()-2);
-            if(!input.isEmpty())
+            if(!input.replaceAll("[^a-zA-Z\\d:]", "").isEmpty()) {
                 rU.add(input);
+            }
 
             String nums = str.replaceAll("\\D", "");
             if(!nums.isEmpty()) {
@@ -147,7 +198,8 @@ public class BUA {
             k = header.indexOf("\n", i);
             String num = header.substring(index, k);
             num = num.replaceAll("\\D", "");
-            num = num.substring(0, 10);
+            if(num.length()>10)
+                num = num.substring(0, 10);
             this.phone = num;
         }
 
@@ -203,7 +255,8 @@ public class BUA {
             k = header.indexOf("\n", i);
             String num = header.substring(index, k);
             num = num.replaceAll("\\D", "");
-            num = num.substring(0, 10);
+            if(num.length()>10)
+                num = num.substring(0, 10);
             this.fax = num;
         }
 
@@ -330,11 +383,20 @@ public class BUA {
                     for(String str:(String[])temp){
                         arr += str + "; ";
                     }
-                    arr = arr.substring(0, arr.length()-2);
+                    if(arr.length()>2)
+                        arr = arr.substring(0, arr.length()-2);
                     arr += "]";
                     result.append(arr);
                 }
-                else {
+                else if(temp instanceof boolean[]){
+                    String arr = "[";
+                    for(boolean str:(boolean[])temp){
+                        arr += str + "; ";
+                    }
+                    arr = arr.substring(0, arr.length()-2);
+                    arr += "]";
+                    result.append(arr);
+                } else {
                     result.append(field.get(this));
                 }
             } catch (IllegalAccessException ex) {

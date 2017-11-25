@@ -1,3 +1,5 @@
+import javax.print.DocFlavor;
+import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -20,16 +22,27 @@ public class BUAConverter {
         ArrayList<ArrayList<String>> strs = br.read(filename);
         BUA filled = new BUA();
 
-        //TODO: ADD CHECK FOR TXT
-        parseCheckboxes(filled, strs);
-        detectNeededAttachments(filled, strs);
+        //corresponds to:
+        //II-A, II-B, II-G, Worksheet 1, Worksheet 2, Worksheet 3
+        String[]attachments = {"2a", "2b", "2g", "ws1", "ws2", "ws3"};
+
         parseHeader(filled, strs.get(0));
         parseBuildingTable(filled, strs.get(0));
+        filled.setCheckboxes(parseCheckboxes(strs));
+        addDependencies(filled, attachments);
+        detectNeededAttachments(filled, strs);
         checkValidity(filled);
-        //gene bag?
-
-
         return filled;
+    }
+
+    void addDependencies(BUA b, String[]att)throws Exception{
+        ArrayList<ArrayList<Integer>>atts = new ArrayList<>();
+        for(String fname:att){
+            ArrayList<ArrayList<String>> strs = br.read("data/"+fname);
+            atts.add(parseCheckboxes(strs));
+        }
+
+        b.setDependent(atts);
     }
 
     void detectNeededAttachments(BUA b, ArrayList<ArrayList<String>> strs){
@@ -38,27 +51,28 @@ public class BUAConverter {
 
     void checkValidity(BUA b){
         if(b.isInvalid()){
-            System.out.println("WARNING: INVALID BUA");
+            //System.out.println("WARNING: INVALID BUA");
         }
     }
 
-    void parseCheckboxes(BUA b, ArrayList<ArrayList<String>> strs){
+    ArrayList<Integer> parseCheckboxes(ArrayList<ArrayList<String>> strs){
         ArrayList<Integer>original_ints = new ArrayList<>();
         ArrayList<Integer>new_ints = new ArrayList<>();
-        Pattern p = Pattern.compile("0|1");
+        Pattern p = Pattern.compile("\\s(0|1)\\s");
         Matcher m;
         for(String line:strs.get(0)){
             m = p.matcher(line);
             while(m.find()){
-                original_ints.add(Integer.parseInt(m.group()));
+                original_ints.add(Integer.parseInt(m.group().trim()));
             }
         }
         for(String line:strs.get(1)){
             m = p.matcher(line);
             while(m.find()){
-                new_ints.add(Integer.parseInt(m.group()));
+                new_ints.add(Integer.parseInt(m.group().trim()));
             }
         }
+        /**
         int ptra = 0;
         int ptrb = 0;
         ArrayList<Integer>checkbox_values = new ArrayList<>();
@@ -77,7 +91,9 @@ public class BUAConverter {
                 ptrb++;
             }
         }
-        b.setCheckboxes(checkbox_values);
+         **/
+        return new_ints;
+        //return checkbox_values;
     }
 
     void parseHeader(BUA b, ArrayList<String> doc){
@@ -150,9 +166,21 @@ public class BUAConverter {
 
 
     public static void main(String[]args)throws Exception{
-        String filename = "data/JCA2.0_TKB in Mice";
-        BUAConverter bc = new BUAConverter();
-        bc.createBUA("data/JCA2.0_TKB in Mice");
+        String[]filenames = {"JCA2.0_TKB in Mice", };
+        //String filename = "data/JCA2.0_TKB in Mice";
+        //String filename = "data/BUAApplicationForm2016";
+        File[]files = new File("data").listFiles();
+        for(File f:files) {
+            String filename = f.getName();
+            if(filename.contains(".doc")){
+                filename = "data/" + filename;
+                BUAConverter bc = new BUAConverter();
+                BUA newBUA = bc.createBUA(filename);
+                if (newBUA.isInvalid())
+                    System.out.println(filename);
+            }
+            System.out.println(filename);
+        }
     }
 
 
