@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
  * Created by Katherine on 11/10/2017.
  */
 public class BUA {
+    private String filename;
     private String piName;
     private String piTitle;
     private Date date;
@@ -34,12 +35,11 @@ public class BUA {
     private boolean invalid;
     private String[]roomsUsed;
 
-    public BUA(){
+    public BUA(String filename){
         this.invalid = false;
         this.funding_sources = "";
         this.grant_nos = "";
-
-
+        this.filename = filename;
     }
 
     public void setDependent(ArrayList<ArrayList<Integer>>atts){
@@ -111,7 +111,9 @@ public class BUA {
         ArrayList<String>rU = new ArrayList<String>();
         int maxBSL = -1;
         for(String str:temp){
-            String input = str.substring(0, str.length()-2);
+            String input = str;
+            if(str.length()>2)
+                input = str.substring(0, str.length()-2);
             if(!input.replaceAll("[^a-zA-Z\\d:]", "").isEmpty()) {
                 rU.add(input);
             }

@@ -24,8 +24,9 @@ public class ReadDocFile
             String[] fileData = extractor.getParagraphText();
             for (int i = 0; i < fileData.length; i++)
             {
-                if (fileData[i] != null)
-                    output.add(fileData[i]);
+                if (fileData[i] != null) {
+                    output.add(fileData[i].replaceAll("FORMTEXT", ""));
+                }
             }
         }
         catch (Exception exep)

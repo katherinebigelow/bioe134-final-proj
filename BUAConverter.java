@@ -20,7 +20,7 @@ public class BUAConverter {
 
     BUA createBUA(String filename)throws Exception{
         ArrayList<ArrayList<String>> strs = br.read(filename);
-        BUA filled = new BUA();
+        BUA filled = new BUA(filename);
 
         //corresponds to:
         //II-A, II-B, II-G, Worksheet 1, Worksheet 2, Worksheet 3
@@ -38,7 +38,7 @@ public class BUAConverter {
     void addDependencies(BUA b, String[]att)throws Exception{
         ArrayList<ArrayList<Integer>>atts = new ArrayList<>();
         for(String fname:att){
-            ArrayList<ArrayList<String>> strs = br.read("data/"+fname);
+            ArrayList<ArrayList<String>> strs = br.read("data/init/"+fname);
             atts.add(parseCheckboxes(strs));
         }
 
@@ -172,14 +172,12 @@ public class BUAConverter {
         File[]files = new File("data").listFiles();
         for(File f:files) {
             String filename = f.getName();
-            if(filename.contains(".doc")){
-                filename = "data/" + filename;
+            if(filename.endsWith(".doc")){
+                filename = "data/" + filename.substring(0, filename.length()-4);
                 BUAConverter bc = new BUAConverter();
                 BUA newBUA = bc.createBUA(filename);
-                if (newBUA.isInvalid())
-                    System.out.println(filename);
+                System.out.print(newBUA);
             }
-            System.out.println(filename);
         }
     }
 
