@@ -6,6 +6,7 @@ and parses them into BUA objects.
 The project structure is:
 
 * `code/this repo`
+* `data/init/`
 * `data/BUAName.doc`
 
 In order to run the code, first convert your `BUAName.doc` file to a `txt` file of
@@ -17,6 +18,9 @@ The BUAs aren't stored on this repo for privacy reasons, but a sample blank BUA
 can be downloaded from [here](https://ehs.berkeley.edu/biosafety/how-do-i-get-or-renew-bua).
 
 For the same reasons, I don't have any demos/examples posted here, but I can email
-over any additional material.
+over any additional materials; in addition, there are six files in `data/init` that
+are not stored here which I used to parse the checkboxes which do not have any
+sensitive data in them, but are essentially just blank BUAs with only certain boxes
+checked.
 
 
